@@ -4,10 +4,10 @@
   </a>
 </p>
 
-# Project Laravel - [Nama Projectmu]
+# Project Laravel & React JS - [Skyrx E-Commerce]
 
 **Deskripsi singkat:**  
-Project ini dibuat dengan Laravel, framework PHP modern yang cepat, elegan, dan mudah digunakan. Cocok untuk membangun aplikasi web skala kecil hingga besar.
+Project ini dibuat saat lagi Luang waktu ketika sedang PKL( Praktik kerja Lapangan ), tujuannya untuk membuat website E-commerce yang modern,
 
 ---
 
@@ -27,3 +27,6 @@ Project ini dibuat dengan Laravel, framework PHP modern yang cepat, elegan, dan 
 ```bash
 git clone https://github.com/Mhmdfahriy/Skyrx.git
 cd Skyrx
+
+cp .env.example .env
+
