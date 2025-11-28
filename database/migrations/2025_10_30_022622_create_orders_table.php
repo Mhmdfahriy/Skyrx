@@ -12,17 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->decimal('total_price', 10, 2);
-        $table->enum('payment_method', ['xendit', 'balance']);
-        $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
-        $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
-        $table->string('invoice_id')->nullable();
-        $table->string('invoice_url')->nullable();
-        $table->timestamp('paid_at')->nullable();
-        $table->timestamps();
-    });
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->decimal('total_price', 10, 2);
+            $table->enum('payment_method', ['xendit', 'balance']);
+            $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->string('invoice_id')->nullable();
+            $table->string('invoice_url')->nullable();
+            $table->timestamp('paid_at')->nullable();
+            $table->timestamps();
+        });
 
 
     }

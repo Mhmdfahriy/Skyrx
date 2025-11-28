@@ -462,20 +462,7 @@
                 "operationId": "getOrdersList",
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Order"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
+                        "description": "Successful operation"
                     }
                 },
                 "security": [
@@ -1114,13 +1101,13 @@
                 }
             }
         },
-        "/api/payment-methods": {
+        "/api/payment/methods": {
             "get": {
                 "tags": [
                     "Payment"
                 ],
                 "summary": "Get available payment methods",
-                "description": "Mendapatkan daftar metode pembayaran yang tersedia (Virtual Account, E-wallet, dan SkyRX Balance). Untuk SkyRX langsung dibayar, untuk Bank/E-wallet perlu simulasi payment via /payment/simulate/{invoice_id}",
+                "description": "Returns list of available payment methods",
                 "operationId": "getPaymentMethods",
                 "responses": {
                     "200": {
@@ -1130,7 +1117,6 @@
                                 "schema": {
                                     "properties": {
                                         "virtualAccount": {
-                                            "description": "Virtual Account payment methods (butuh simulasi payment)",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -1144,7 +1130,7 @@
                                                     },
                                                     "logo": {
                                                         "type": "string",
-                                                        "example": "http://localhost:8000/Payments/BCA-icon.svg"
+                                                        "example": "http://localhost/Payments/BCA-icon.svg"
                                                     },
                                                     "popular": {
                                                         "type": "boolean",
@@ -1155,7 +1141,6 @@
                                             }
                                         },
                                         "ewallet": {
-                                            "description": "E-wallet payment methods (butuh simulasi payment)",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -1169,14 +1154,13 @@
                                                     },
                                                     "logo": {
                                                         "type": "string",
-                                                        "example": "http://localhost:8000/Payments/Dana-icon.svg"
+                                                        "example": "http://localhost/Payments/Dana-icon.svg"
                                                     }
                                                 },
                                                 "type": "object"
                                             }
                                         },
                                         "Point": {
-                                            "description": "Point/Balance payment methods (langsung sukses)",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -1190,7 +1174,7 @@
                                                     },
                                                     "logo": {
                                                         "type": "string",
-                                                        "example": "http://localhost:8000/Payments/SkyRX-icon.svg"
+                                                        "example": "http://localhost/Payments/SkyRX-icon.svg"
                                                     }
                                                 },
                                                 "type": "object"
@@ -1205,26 +1189,49 @@
                 }
             }
         },
-        "/payment/simulate/{invoice_number}": {
+        "/api/payment/simulate/{invoice_number}": {
             "post": {
                 "tags": [
                     "Payment"
                 ],
-                "summary": "Simulate Xendit payment (Bank/E-wallet)",
-                "description": "Simulate pembayaran untuk Bank Transfer dan E-wallet. Gunakan invoice_id yang didapat dari response POST /api/orders/{order}/pay. Endpoint ini hanya untuk testing, di production akan otomatis dari Xendit webhook.",
+                "summary": "Simulate Xendit payment",
+                "description": "Simulate pembayaran untuk QA testing. Copy invoice_id dari order lalu paste di sini",
                 "operationId": "simulatePayment",
                 "parameters": [
                     {
                         "name": "invoice_number",
                         "in": "path",
-                        "description": "Invoice ID dari Xendit (didapat dari response order->invoice_id)",
+                        "description": "Invoice ID dari Xendit",
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "692551709101a99ffd9eebae"
+                            "example": "69269a49cd1cd15c100f1d18"
                         }
                     }
                 ],
+                "requestBody": {
+                    "description": "Optional simulation parameters",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "simulate_delay": {
+                                        "description": "Simulate processing delay",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "force_status": {
+                                        "description": "Force specific status",
+                                        "type": "string",
+                                        "example": "paid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Payment simulated successfully",
@@ -1232,6 +1239,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Payment simulation successful"
@@ -1240,7 +1251,11 @@
                                             "properties": {
                                                 "id": {
                                                     "type": "integer",
-                                                    "example": 34
+                                                    "example": 15
+                                                },
+                                                "invoice_id": {
+                                                    "type": "string",
+                                                    "example": "69269a49cd1cd15c100f1d18"
                                                 },
                                                 "payment_status": {
                                                     "type": "string",
@@ -1256,38 +1271,6 @@
                                                 }
                                             },
                                             "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Invoice not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invoice not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Payment already processed",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Payment already processed"
                                         }
                                     },
                                     "type": "object"

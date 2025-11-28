@@ -6,206 +6,221 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
     /**
      * @OA\Get(
-     *      path="/api/payment-methods",
+     *      path="/api/payment/methods",
      *      operationId="getPaymentMethods",
      *      tags={"Payment"},
      *      summary="Get available payment methods",
-     *      description="Mendapatkan daftar metode pembayaran yang tersedia (Virtual Account, E-wallet, dan SkyRX Balance). Untuk SkyRX langsung dibayar, untuk Bank/E-wallet perlu simulasi payment via /payment/simulate/{invoice_id}",
+     *      description="Returns list of available payment methods",
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
      *          @OA\JsonContent(
-     *              @OA\Property(
-     *                  property="virtualAccount",
-     *                  type="array",
-     *                  description="Virtual Account payment methods (butuh simulasi payment)",
-     *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", example="BCA"),
-     *                      @OA\Property(property="name", type="string", example="BCA"),
-     *                      @OA\Property(property="logo", type="string", example="http://localhost:8000/Payments/BCA-icon.svg"),
-     *                      @OA\Property(property="popular", type="boolean", example=true)
-     *                  )
-     *              ),
-     *              @OA\Property(
-     *                  property="ewallet",
-     *                  type="array",
-     *                  description="E-wallet payment methods (butuh simulasi payment)",
-     *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", example="DANA"),
-     *                      @OA\Property(property="name", type="string", example="DANA"),
-     *                      @OA\Property(property="logo", type="string", example="http://localhost:8000/Payments/Dana-icon.svg")
-     *                  )
-     *              ),
-     *              @OA\Property(
-     *                  property="Point",
-     *                  type="array",
-     *                  description="Point/Balance payment methods (langsung sukses)",
-     *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", example="SkyRX"),
-     *                      @OA\Property(property="name", type="string", example="SkyRX ID"),
-     *                      @OA\Property(property="logo", type="string", example="http://localhost:8000/Payments/SkyRX-icon.svg")
-     *                  )
-     *              )
+     *              @OA\Property(property="virtualAccount", type="array", @OA\Items(
+     *                  @OA\Property(property="id", type="string", example="BCA"),
+     *                  @OA\Property(property="name", type="string", example="BCA"),
+     *                  @OA\Property(property="logo", type="string", example="http://localhost/Payments/BCA-icon.svg"),
+     *                  @OA\Property(property="popular", type="boolean", example=true)
+     *              )),
+     *              @OA\Property(property="ewallet", type="array", @OA\Items(
+     *                  @OA\Property(property="id", type="string", example="DANA"),
+     *                  @OA\Property(property="name", type="string", example="DANA"),
+     *                  @OA\Property(property="logo", type="string", example="http://localhost/Payments/Dana-icon.svg")
+     *              )),
+     *              @OA\Property(property="Point", type="array", @OA\Items(
+     *                  @OA\Property(property="id", type="string", example="SkyRX"),
+     *                  @OA\Property(property="name", type="string", example="SkyRX ID"),
+     *                  @OA\Property(property="logo", type="string", example="http://localhost/Payments/SkyRX-icon.svg")
+     *              ))
      *          )
      *      )
      * )
      */
     public function getPaymentMethods()
-    {
-        $baseUrl = url('/Payments/');
+{
+    // Gunakan asset() helper untuk path yang benar
+    $baseUrl = asset('Payments');
 
-        $methods = [
-            'virtualAccount' => [
-                [
-                    'id' => 'BCA',
-                    'name' => 'BCA',
-                    'logo' => $baseUrl . '/BCA-icon.svg',
-                    'popular' => true,
-                ],
-                [
-                    'id' => 'MANDIRI',
-                    'name' => 'Mandiri',
-                    'logo' => $baseUrl . '/Mandiri-icon.svg',
-                ],
-                [
-                    'id' => 'BNI',
-                    'name' => 'BNI',
-                    'logo' => $baseUrl . '/BNI-icon.svg',
-                ],
-                [
-                    'id' => 'BRI',
-                    'name' => 'BRI',
-                    'logo' => $baseUrl . '/BRI-icon.svg',
-                ],
+    $methods = [
+        'virtualAccount' => [
+            [
+                'id' => 'BCA',
+                'name' => 'BCA',
+                'logo' => $baseUrl . '/BCA-icon.svg',
+                'popular' => true,
             ],
-            'ewallet' => [
-                [
-                    'id' => 'DANA',
-                    'name' => 'DANA',
-                    'logo' => $baseUrl . '/Dana-icon.svg',
-                ],
-                [
-                    'id' => 'OVO',
-                    'name' => 'OVO',
-                    'logo' => $baseUrl . '/Ovo-icon.svg',
-                ],
-                [
-                    'id' => 'SHOPEEPAY',
-                    'name' => 'ShopeePay',
-                    'logo' => $baseUrl . '/ShopeePay-icon.svg',
-                ],
+            [
+                'id' => 'MANDIRI',
+                'name' => 'Mandiri',
+                'logo' => $baseUrl . '/Mandiri-icon.svg',
             ],
+            [
+                'id' => 'BNI',
+                'name' => 'BNI',
+                'logo' => $baseUrl . '/BNI-icon.svg',
+            ],
+            [
+                'id' => 'BRI',
+                'name' => 'BRI',
+                'logo' => $baseUrl . '/BRI-icon.svg',
+            ],
+        ],
+        'ewallet' => [
+            [
+                'id' => 'DANA',
+                'name' => 'DANA',
+                'logo' => $baseUrl . '/Dana-icon.svg',
+            ],
+            [
+                'id' => 'OVO',
+                'name' => 'OVO',
+                'logo' => $baseUrl . '/Ovo-icon.svg',
+            ],
+            [
+                'id' => 'SHOPEEPAY',
+                'name' => 'ShopeePay',
+                'logo' => $baseUrl . '/ShopeePay-icon.svg',
+            ],
+        ],
+        'Point' => [
+            [
+                'id' => 'SkyRX',
+                'name' => 'SkyRX ID',
+                'logo' => $baseUrl . '/SkyRX-icon.svg',
+            ],
+        ],
+    ];
 
-            'Point' => [
-                [
-                    'id' => 'SkyRX',
-                    'name' => 'SkyRX ID',
-                    'logo' => $baseUrl . '/SkyRX-icon.svg',
-                ],
-            ],
-        ];
-
-        return response()->json($methods);
-    }
+    return response()->json($methods);
+}
 
     /**
      * @OA\Post(
-     *      path="/payment/simulate/{invoice_number}",
+     *      path="/api/payment/simulate/{invoice_number}",
      *      operationId="simulatePayment",
      *      tags={"Payment"},
-     *      summary="Simulate Xendit payment (Bank/E-wallet)",
-     *      description="Simulate pembayaran untuk Bank Transfer dan E-wallet. Gunakan invoice_id yang didapat dari response POST /api/orders/{order}/pay. Endpoint ini hanya untuk testing, di production akan otomatis dari Xendit webhook.",
+     *      summary="Simulate Xendit payment",
+     *      description="Simulate pembayaran untuk QA testing. Copy invoice_id dari order lalu paste di sini",
      *      @OA\Parameter(
      *          name="invoice_number",
      *          in="path",
-     *          description="Invoice ID dari Xendit (didapat dari response order->invoice_id)",
+     *          description="Invoice ID dari Xendit",
      *          required=true,
-     *          @OA\Schema(type="string", example="692551709101a99ffd9eebae")
+     *          @OA\Schema(type="string", example="69269a49cd1cd15c100f1d18")
+     *      ),
+     *      @OA\RequestBody(
+     *          required=false,
+     *          description="Optional simulation parameters",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="simulate_delay", type="boolean", example=false, description="Simulate processing delay"),
+     *              @OA\Property(property="force_status", type="string", example="paid", description="Force specific status")
+     *          )
      *      ),
      *      @OA\Response(
      *          response=201,
      *          description="Payment simulated successfully",
      *          @OA\JsonContent(
+     *              @OA\Property(property="success", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Payment simulation successful"),
      *              @OA\Property(
      *                  property="order",
      *                  type="object",
-     *                  @OA\Property(property="id", type="integer", example=34),
+     *                  @OA\Property(property="id", type="integer", example=15),
+     *                  @OA\Property(property="invoice_id", type="string", example="69269a49cd1cd15c100f1d18"),
      *                  @OA\Property(property="payment_status", type="string", example="paid"),
      *                  @OA\Property(property="status", type="string", example="processing"),
      *                  @OA\Property(property="paid_at", type="string", format="date-time")
      *              )
      *          )
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="Invoice not found",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Invoice not found")
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Payment already processed",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Payment already processed")
-     *          )
      *      )
      * )
      */
-    public function simulate($invoiceNumber)
+
+    public function simulate($invoiceNumber, Request $request)
     {
-        // Cari order berdasarkan invoice_id
-        $order = Order::where('invoice_id', $invoiceNumber)->first();
-
-        if (!$order) {
-            return response()->json([
-                'message' => 'Invoice not found'
-            ], 404);
-        }
-
-        // Cek apakah sudah dibayar
-        if ($order->payment_status === 'paid') {
-            return response()->json([
-                'message' => 'Payment already processed',
-                'order' => $order->load('items.product')
-            ], 400);
-        }
-
-        DB::beginTransaction();
-
+        // Set timeout untuk prevent hanging
+        set_time_limit(30);
+        
         try {
-            // Update status pembayaran
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'processing',
-                'paid_at' => now(),
-            ]);
-
-            // Kurangi stok produk
-            foreach ($order->items as $item) {
-                $product = $item->product;
-                if ($product && $product->stock >= $item->quantity) {
-                    $product->decrement('stock', $item->quantity);
-                }
+            // Optional: Simulate delay if requested
+            if ($request->get('simulate_delay', false)) {
+                sleep(2);
             }
 
-            DB::commit();
+            // Cari order
+            $order = Order::where('invoice_id', $invoiceNumber)->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invoice not found',
+                    'invoice_id' => $invoiceNumber
+                ], 404);
+            }
+
+            // Cek apakah sudah dibayar
+            if ($order->payment_status === 'paid') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment already processed',
+                    'order_id' => $order->id,
+                    'current_status' => $order->payment_status
+                ], 400);
+            }
+
+            // Update payment status
+            $order->payment_status = 'paid';
+            $order->status = 'processing';
+            $order->paid_at = now();
+            $order->save();
+
+            // Kurangi stok (tanpa load relationship dulu)
+            $items = DB::table('order_items')
+                ->where('order_id', $order->id)
+                ->get();
+
+            foreach ($items as $item) {
+                DB::table('products')
+                    ->where('id', $item->product_id)
+                    ->where('stock', '>=', $item->quantity)
+                    ->decrement('stock', $item->quantity);
+            }
+
+            // Log successful simulation
+            Log::info('Payment simulation successful', [
+                'order_id' => $order->id,
+                'invoice_id' => $invoiceNumber,
+                'simulated_at' => now()
+            ]);
 
             return response()->json([
+                'success' => true,
                 'message' => 'Payment simulation successful',
-                'order' => $order->fresh()->load('items.product')
+                'order' => [
+                    'id' => $order->id,
+                    'invoice_id' => $order->invoice_id,
+                    'payment_status' => $order->payment_status,
+                    'status' => $order->status,
+                    'paid_at' => $order->paid_at,
+                ]
             ], 201);
 
         } catch (\Exception $e) {
-            DB::rollBack();
+            Log::error('Payment simulation failed', [
+                'invoice_id' => $invoiceNumber,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
-                'message' => 'Simulation failed: ' . $e->getMessage()
+                'success' => false,
+                'message' => 'Simulation failed',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

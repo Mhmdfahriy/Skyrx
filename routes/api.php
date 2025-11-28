@@ -11,7 +11,8 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PaymentController; 
 use App\Http\Controllers\Api\Admin\AdminProductController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
-use App\Http\Controllers\Api\UserBalanceController; 
+use App\Http\Controllers\Api\UserBalanceController;
+use App\Http\Controllers\Api\FlashSaleBannerController; // TAMBAHKAN INI
 
 // --------------------
 // PUBLIC ROUTES
@@ -27,6 +28,12 @@ Route::post('/chat', [ChatController::class, 'chat']);
 
 Route::post('/forgot-password', [OtpPasswordController::class, 'sendOtp']);
 Route::post('/reset-password', [OtpPasswordController::class, 'verifyOtp']);
+
+// Payment simulation untuk Bank/E-wallet (testing only) - PUBLIC FOR TESTING
+Route::post('/payment/simulate/{invoice_number}', [PaymentController::class, 'simulate']);
+
+// Flash Sale Banner - PUBLIC
+Route::get('/flash-sale-banners', [FlashSaleBannerController::class, 'index']);
 
 // --------------------
 // PROTECTED ROUTES (AUTH)
@@ -51,15 +58,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
-    Route::post('/orders/{order}/pay', [OrderController::class, 'pay']); // ✅ Payment endpoint
+    Route::post('/orders/{order}/pay', [OrderController::class, 'pay']);
     Route::post('/orders/{order}/check-payment', [OrderController::class, 'checkPaymentStatus']);
-    Route::get('/orders/{order}/status', [OrderController::class, 'getStatus']); // ✅ USER status endpoint
+    Route::get('/orders/{order}/status', [OrderController::class, 'getStatus']); 
     
     // Payment methods
     Route::get('/payment-methods', [PaymentController::class, 'getPaymentMethods']);
-
-    // Payment simulation untuk Bank/E-wallet (testing only)
-    Route::post('/payment/simulate/{invoice_number}', [PaymentController::class, 'simulate']);
 
     // Chat history
     Route::get('/chat/history', [ChatController::class, 'history']);
@@ -82,6 +86,14 @@ Route::prefix('admin')->middleware(['auth:sanctum', \App\Http\Middleware\AdminMi
     // Orders
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{order}', [AdminOrderController::class, 'show']);
-    Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus']); // ✅ ADMIN update status
+    Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus']);
     Route::delete('/orders/{order}', [AdminOrderController::class, 'destroy']);
+
+    // Flash Sale Banners - TAMBAHKAN INI
+    Route::get('/flash-sale-banners', [FlashSaleBannerController::class, 'adminIndex']);
+    Route::post('/flash-sale-banners', [FlashSaleBannerController::class, 'store']);
+    Route::post('/flash-sale-banners/{id}', [FlashSaleBannerController::class, 'update']); // POST karena ada file
+    Route::delete('/flash-sale-banners/{id}', [FlashSaleBannerController::class, 'destroy']);
+    Route::patch('/flash-sale-banners/{id}/toggle', [FlashSaleBannerController::class, 'toggleActive']);
+    Route::post('/flash-sale-banners/update-order', [FlashSaleBannerController::class, 'updateOrder']);
 });

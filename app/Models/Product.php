@@ -15,7 +15,7 @@ class Product extends Model
         'category',
     ];
 
-    protected function castc(): array
+    protected function casts(): array
     {
         return[
             'price' => 'decimal:2',

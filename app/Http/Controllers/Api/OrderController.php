@@ -30,15 +30,7 @@ class OrderController extends Controller
      *      security={{"sanctum":{}}},
      *      @OA\Response(
      *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     *              type="array",
-     *              @OA\Items(ref="#/components/schemas/Order")
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated"
+     *          description="Successful operation"
      *      )
      * )
      */

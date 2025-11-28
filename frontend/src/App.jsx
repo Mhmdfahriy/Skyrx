@@ -27,6 +27,7 @@ import PaymentPage from "./pages/PaymentPage";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminLayout from "./components/AdminLayout";
+import AdminFlashSaleBanners from './pages/admin/FlashSaleBanners';
 
 function RoleBasedRedirect() {
   const { user, loadingUser } = useAuth();
@@ -138,6 +139,7 @@ function App({ user, loading }) {
 
         {/* Catch all - redirect based on role */}
         <Route path="*" element={<RoleBasedRedirect />} />
+        <Route path="/admin/flash-sale-banners" element={<AdminFlashSaleBanners />} />
       </Routes>
 
       {!isAdminPage && (
