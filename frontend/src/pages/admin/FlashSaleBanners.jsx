@@ -200,12 +200,12 @@ export default function AdminFlashSaleBanners() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-white-900">
         <SidebarAdmin />
         <div className="flex-1 flex justify-center items-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-300">Loading...</p>
+            <p className="text-black-300">Loading...</p>
           </div>
         </div>
       </div>
@@ -213,7 +213,7 @@ export default function AdminFlashSaleBanners() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex h-screen bg-white-900">
       <SidebarAdmin />
       
       <div className="flex-1 overflow-y-auto">
@@ -222,8 +222,8 @@ export default function AdminFlashSaleBanners() {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Flash Sale Banners</h1>
-                <p className="text-gray-400">Kelola banner promosi Anda (gambar wajib, info opsional)</p>
+                <h1 className="text-3xl font-bold text-black mb-2">Flash Sale Banners</h1>
+                <p className="text-black">Kelola banner promosi Anda (gambar wajib, info opsional)</p>
               </div>
               <button
                 onClick={() => {
