@@ -57,8 +57,8 @@ class FlashSaleBannerController extends Controller
         if ($isJson) {
             // Validasi untuk JSON (base64)
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'subtitle' => 'required|string|max:255',
+                'title' => 'nullable|string|max:255',
+                'subtitle' => 'nullable|string|max:255',
                 'image_base64' => 'required|string',
                 'order' => 'nullable|integer',
                 'is_active' => 'nullable|boolean',
@@ -94,8 +94,8 @@ class FlashSaleBannerController extends Controller
         } else {
             // Validasi untuk form-data (file upload)
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'subtitle' => 'required|string|max:255',
+                'title' => 'nullable|string|max:255',
+                'subtitle' => 'nullable|string|max:255',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'order' => 'nullable|integer',
                 'is_active' => 'nullable|boolean',
@@ -120,8 +120,8 @@ class FlashSaleBannerController extends Controller
         }
 
         $banner = FlashSaleBanner::create([
-            'title' => $request->title,
-            'subtitle' => $request->subtitle,
+            'title' => $request->title ?? null,
+            'subtitle' => $request->subtitle ?? null,
             'image' => $imagePath,
             'order' => $request->order ?? 0,
             'is_active' => $request->is_active ?? true,
@@ -148,10 +148,10 @@ class FlashSaleBannerController extends Controller
         $isJson = $request->isJson() || $request->has('image_base64');
 
         if ($isJson) {
-            // Validasi JSON
+            // Validasi JSON - UBAH: title dan subtitle jadi nullable
             $validator = Validator::make($request->all(), [
-                'title' => 'sometimes|required|string|max:255',
-                'subtitle' => 'sometimes|required|string|max:255',
+                'title' => 'nullable|string|max:255',
+                'subtitle' => 'nullable|string|max:255',
                 'image_base64' => 'nullable|string',
                 'order' => 'nullable|integer',
                 'is_active' => 'nullable|boolean',
@@ -195,8 +195,8 @@ class FlashSaleBannerController extends Controller
         } else {
             // Validasi form-data
             $validator = Validator::make($request->all(), [
-                'title' => 'sometimes|required|string|max:255',
-                'subtitle' => 'sometimes|required|string|max:255',
+                'title' => 'nullable|string|max:255',
+                'subtitle' => 'nullable|string|max:255',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'order' => 'nullable|integer',
                 'is_active' => 'nullable|boolean',
@@ -223,13 +223,25 @@ class FlashSaleBannerController extends Controller
             }
         }
 
-        // Update field lainnya
-        if ($request->has('title')) $banner->title = $request->title;
-        if ($request->has('subtitle')) $banner->subtitle = $request->subtitle;
-        if ($request->has('order')) $banner->order = $request->order;
-        if ($request->has('is_active')) $banner->is_active = $request->is_active;
-        if ($request->has('start_date')) $banner->start_date = $request->start_date;
-        if ($request->has('end_date')) $banner->end_date = $request->end_date;
+        // PERUBAHAN UTAMA DI SINI - Update field lainnya dengan input() untuk terima null
+        if ($request->has('title')) {
+            $banner->title = $request->input('title'); // Bisa null
+        }
+        if ($request->has('subtitle')) {
+            $banner->subtitle = $request->input('subtitle'); // Bisa null
+        }
+        if ($request->has('order')) {
+            $banner->order = $request->order;
+        }
+        if ($request->has('is_active')) {
+            $banner->is_active = $request->is_active;
+        }
+        if ($request->has('start_date')) {
+            $banner->start_date = $request->input('start_date'); // Bisa null
+        }
+        if ($request->has('end_date')) {
+            $banner->end_date = $request->input('end_date'); // Bisa null
+        }
 
         $banner->save();
 

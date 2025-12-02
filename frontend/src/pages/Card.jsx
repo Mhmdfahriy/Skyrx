@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import api from '../api/axios';
 import CardModal from '../components/CardModal';
+import IconCard from '../components/IconCard';
 
 export default function Card() {
   const { card, removeFromCard, clearCard, updateQty } = useCard();
@@ -118,6 +119,7 @@ export default function Card() {
           <div className="text-2xl font-bold text-gray-700 mb-2 text-center">
             Keranjangnya kosong nih ;(
           </div>
+          <IconCard/>
           <button
             onClick={() => navigate('/products')}
             className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-8 py-2 rounded-lg"
@@ -135,7 +137,30 @@ export default function Card() {
 
         {/* Keranjang */}
         <section className="flex-1 w-full">
-          <h2 className="text-2xl font-bold mb-3">Keranjang</h2>
+          <div className="flex items-center gap-3 mb-3">
+            <button
+  onClick={() => navigate(-1)}
+  className="w-10 h-10 flex items-center justify-center 
+             rounded-full bg-white shadow 
+             border border-gray-200
+             hover:bg-gray-100 active:scale-95 transition"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="black"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-5 h-5"
+  >
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+</button>
+
+            <h2 className="text-2xl font-bold">Keranjang</h2>
+        </div>
           <div className="bg-white rounded-xl shadow border border-gray-200 p-4">
             <div className="mb-3 flex text-sm text-gray-700 gap-2 items-center">
               <input

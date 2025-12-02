@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCard } from "../context/CardContext";
 import { useState } from "react";
-import { User } from "lucide-react";
+import { User, ShoppingBag } from "lucide-react"; // Pastikan ShoppingBag diimport
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -17,18 +17,11 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  // Helper avatar – versi bersih tanpa console.log
+  // Helper avatar
   const getAvatarUrl = () => {
     if (!user?.avatar) return null;
-
-    if (user.avatar.startsWith("http")) {
-      return user.avatar;
-    }
-
-    if (user.avatar === "default-avatar.png") {
-      return "http://127.0.0.1:8000/storage/avatar/default-avatar.png";
-    }
-
+    if (user.avatar.startsWith("http")) return user.avatar;
+    if (user.avatar === "default-avatar.png") return "http://127.0.0.1:8000/storage/avatar/default-avatar.png";
     return `http://127.0.0.1:8000/storage/avatar/${user.avatar}`;
   };
 
@@ -37,25 +30,40 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900 text-white shadow-md z-[9999]">
       <div className="max-w-6xl mx-auto flex justify-between items-center h-16 px-4">
+        
+        {/* Left menu (Mobile & Desktop) */}
+        <div className="flex items-center gap-6">
+          
+          {/* Products Link - Sekarang selalu ada ikon dan teks di mobile, dan teks penuh di desktop */}
+          <Link 
+            to="/products" 
+            className="flex items-center gap-1 hover:text-orange-400 font-medium" 
+          >
+             {/* Ikon dan Teks muncul bersamaan di mobile (sampai ukuran md), Teks saja di desktop */}
+             
+             {/* Tampilan Mobile: Ikon + Teks */}
+             <span className="flex items-center gap-1 md:hidden">
+                <ShoppingBag className="w-6 h-6" /> 
+                <span className="text-sm">Products</span>
+             </span>
 
-        {/* Left menu desktop */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/products" className="hover:text-orange-400 font-medium">
-            Products
+             {/* Tampilan Desktop: Hanya Teks Penuh */}
+             <span className="hidden md:inline">Products</span>
           </Link>
 
+          {/* Menu lainnya (Orders, Admin) - Teks penuh hanya untuk Desktop */}
           {user && (
-            <Link to="/orders" className="hover:text-orange-400 font-medium">
+            <Link to="/orders" className="hidden md:flex hover:text-orange-400 font-medium">
               Orders
             </Link>
           )}
 
           {user?.role === "admin" && (
             <>
-              <Link to="/admin/products" className="hover:text-orange-400 font-medium">
+              <Link to="/admin/products" className="hidden md:flex hover:text-orange-400 font-medium">
                 Admin Products
               </Link>
-              <Link to="/admin/orders" className="hover:text-orange-400 font-medium">
+              <Link to="/admin/orders" className="hidden md:flex hover:text-orange-400 font-medium">
                 Admin Orders
               </Link>
             </>
@@ -72,9 +80,8 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Right section */}
+        {/* Right section (Tidak Berubah) */}
         <div className="flex items-center gap-3">
-
           {/* Cart */}
           <Link to="/card" className="relative hover:text-orange-400 flex items-center">
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,8 +98,7 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-
-          {/* Auth */}
+          {/* Auth Section tetap sama */}
           {!user ? (
             <>
               <Link
@@ -101,7 +107,6 @@ export default function Navbar() {
               >
                 Login
               </Link>
-
               <Link
                 to="/register"
                 className="ml-2 py-1 px-4 rounded bg-orange-500 hover:bg-orange-400 text-gray-900 capitalize font-bold transition"
@@ -110,8 +115,8 @@ export default function Navbar() {
               </Link>
             </>
           ) : (
-            <div className="relative">
-              {/* Avatar + dropdown */}
+             <div className="relative">
+              {/* Avatar + dropdown (Kode yang sama) */}
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-2 hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors"
@@ -128,16 +133,13 @@ export default function Navbar() {
                     }}
                   />
                 ) : null}
-
                 <span
                   className="fallback-avatar inline-flex h-8 w-8 rounded-full bg-orange-200 text-orange-600 font-bold justify-center items-center"
                   style={{ display: avatarUrl ? "none" : "inline-flex" }}
                 >
                   {user?.name?.charAt(0).toUpperCase()}
                 </span>
-
                 <span className="font-medium text-sm">{user?.name}</span>
-
                 <svg
                   className={`w-4 h-4 transition-transform duration-200 ${
                     showProfileMenu ? "rotate-180" : ""
@@ -149,15 +151,13 @@ export default function Navbar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-
-              {/* Dropdown menu */}
+              {/* Dropdown menu (Kode yang sama) */}
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50">
                   <div className="px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
                     <div className="font-semibold">{user?.name}</div>
                     <div className="text-xs opacity-90">{user?.email}</div>
                   </div>
-
                   <div className="py-2">
                     <Link
                       to="/profile"
@@ -167,7 +167,6 @@ export default function Navbar() {
                       <User className="w-4 h-4" />
                       <span className="font-medium">Profil Saya</span>
                     </Link>
-
                     <Link
                       to="/orders"
                       onClick={() => setShowProfileMenu(false)}
@@ -183,7 +182,6 @@ export default function Navbar() {
                       </svg>
                       <span className="font-medium">Pesanan Saya</span>
                     </Link>
-
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);

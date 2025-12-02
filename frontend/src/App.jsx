@@ -16,7 +16,7 @@ import ProfileSettings from './pages/ProfileSettings';
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Chat from "./pages/Chat";
-import Card from "./components/Card";
+import Card from "./pages/Card.jsx";
 import GoogleCallback from "./pages/GoogleCallback";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
