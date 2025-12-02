@@ -134,8 +134,6 @@ export default function Products() {
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center text-white">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Flash Sale</h2>
-                <p className="text-sm sm:text-base md:text-lg">Belanja mudah & hemat</p>
               </div>
             </div>
           )}
