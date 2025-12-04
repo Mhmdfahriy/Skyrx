@@ -167,7 +167,7 @@ export default function RootApp() {
   return (
     <AuthProvider>
       <CardProvider>
-        <BalanceProvider>  {/* ← WRAP DI SINI */}
+        <BalanceProvider>
           <AppWithRouter />
         </BalanceProvider>
       </CardProvider>
